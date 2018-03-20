@@ -26,22 +26,22 @@ import datetime as dt
 
 def main():    
     blotter = initialize_blotter()
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',1.223,541.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(),'ETH',1.223,541.33]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
 
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.623,561.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.623,561.33]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
 
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.723,571.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.723,571.33]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
     
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',3.43, 521.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(),'ETH',3.43, 521.33]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
 
     print(blotter)
     
 def initialize_blotter():
-    col_names = ['Timestamp','Pair','Volume','Executed Price']
+    col_names = ['Timestamp','Pair','Quantity','Executed Price']
     return pd.DataFrame(columns=col_names)
 
 if __name__ == "__main__":

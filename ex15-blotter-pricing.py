@@ -28,7 +28,7 @@ def main():
     blotter = initialize_blotter()
     bid, ask = get_price("eth-usd")
     print("bid ", bid, " ask", ask)
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',1.223, ask]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(),'ETH',1.223, ask]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
     print(blotter)
 
@@ -41,7 +41,7 @@ def get_price(pair):
 
 
 def initialize_blotter():
-    col_names = ['Timestamp','Pair','Volume','Executed Price']
+    col_names = ['Timestamp','Pair','Quantity','Executed Price']
     return pd.DataFrame(columns=col_names)
 
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
