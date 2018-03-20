@@ -9,7 +9,7 @@ def main():
     pairs = ['ethusd','btcusd']
 
     # 1. Extract ethusd and btcusd for past 2 years and place into CSV file
-    # 2. DataFrame.join() into one DF, set index to date, clean
+    # 2. Load into separate DataFrames and then DataFrame.join() into one DF, set index to date, clean NaNs
     # 3. Use NumPy to create equally weight allocs ie. np.full((1,len(pairs)),(1.0/len(pairs)))
     initial_allocs = np.full((1,len(pairs)),(1.0/len(pairs)))
     # 4. Create a function that normalizes data, breaks into allocations, create pct change for each day, find standard deviation and re
