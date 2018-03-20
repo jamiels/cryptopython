@@ -12,7 +12,8 @@ def main():
     # 2. Load into separate DataFrames and then DataFrame.join() into one DF, set index to date, clean NaNs
     # 3. Use NumPy to create equally weight allocs ie. np.full((1,len(pairs)),(1.0/len(pairs)))
     initial_allocs = np.full((1,len(pairs)),(1.0/len(pairs)))
-    # 4. Create a function that normalizes data, breaks into allocations, create pct change for each day, find standard deviation and re
+    # 4. Normalize pricing data (normalize_data())
+    # 5. Create a function that normalizes data, breaks into allocations, create pct change for each day, find standard deviation and re
     data =  pd.read_csv("") # time series of pairs
     bnds = (())
     for p in pairs:
@@ -24,13 +25,16 @@ def main():
     result = spo.minimize(get_portfolio_vol,initial_allocs,bounds=bnds,constraints=constraints,args=(data,),method='SLSQP',options={'disp':True})
     print(result.x)
 
-def get_portfolio_vol(portfolio,alloc):
-    # portfolio has time series of pairs
-    portfolio = portfolio * alloc
-    portfolio = portfolio.sum(axis=1)
-    daily_returns = portfolio.pct_change(1)
-    std = daily_returns.std()
+def get_portfolio_vol(alloc,portfolio):
+    # portfolio =  normalized time series of pairs
+    portfolio = portfolio * alloc # break into allocations
+    portfolio = portfolio.sum(axis=1) # single column sum 
+    daily_returns = portfolio.pct_change(1) # day over day pct change
+    std = daily_returns.std() # std dev of pct changes
     return std
+
+def normalize_data(df):
+    return df / df.ix[0,:] # every row is a %age of first row
 
 if __name__ == "__main__":
     main()
