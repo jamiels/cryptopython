@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# VWAP
-#
-# Docs: https://docs.gdax.com
 
+
+# Build full app
 
 import requests
 import matplotlib.pyplot as plt
@@ -26,27 +25,39 @@ import time
 import datetime as dt
 
 def main():    
-
-    blotter = initialize_blotter()
+    # Initial portfolio size in cash
+    funds = 100000000.0
     pairs = ['ethusd','btcusd'] # assume usd base
-    pl = initialize_pl(pairs)
 
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',1.223,541.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
-    blotter = blotter.append(data, ignore_index=True)
-    pl = update_pl(pl,'ethusd',1.223,541.33)
-    print(pl)
+    # Initialize data structures
+    df_blotter = initialize_blotter()
+    df_pl = initialize_pl(pairs)
+    df_products = get_products()
 
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.623,561.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
-    blotter = blotter.append(data, ignore_index=True)
-    pl = update_pl(pl,'ethusd',2.623,561.33)
-    print(pl)
+    # Design a menu a system 
+    menu = ('Buy', 'Sell', 'Show Blotter', 'Show PL', 'Quit')
+    while True:
+        choice = display_menu(menu,exit_option=5)
+        if choice == 1:
+            # Buy
+            print("Choice 1 chosen")
+        elif choice == 2:
+            print("Choice 2 chosen")
+            # Sell
+        elif choice == 3:
+            view_blotter(df_blotter)
+        elif choice == 4:
+            view_pl(df_pl)
+        # Complete rest
 
-
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',2.723,571.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
-    blotter = blotter.append(data, ignore_index=True)
-    
-    data = pd.DataFrame([[dt.datetime.now(),'ETH',3.43, 521.33]] ,columns=['Timestamp','Pair','Volume','Executed Price'])
-    blotter = blotter.append(data, ignore_index=True)
+def display_menu(menu,exit_option=-1):
+    for m in menu:
+        print(menu.index(m)+1,". ",m)
+    choice = int(input("Enter choice >> #"))
+    if choice==exit_option:
+        print("Bye")
+        quit()
+    return choice
 
 def calc_vwap(current_qty,current_vwap,qty,price):
     dollar = current_qty * current_vwap
@@ -62,8 +73,30 @@ def update_pl(pl,pair,qty,price):
         new_vwap = calc_vwap(current_qty,current_vwap,qty,price)
         pl.at[pair,'Position'] = current_qty + qty
         pl.at[pair,'VWAP'] = new_vwap
-
+        # TODO Recalc UPL
+    elif qty < 1: #sell
+        # TODO recalc UPL, RPL, position
+        print("Insert code handling a sale - recalc UPL,RPL & position")
     return pl
+
+def view_blotter(df_blotter):
+    print("---- Trade Blotter")
+    print(df_blotter)
+    print()
+
+
+def view_pl(df_pl):
+    # TODO Update UPL here
+    print("---- PL")
+    print(df_pl)
+    print()
+
+
+def get_price(pair):
+    df = load('https://api.gdax.com/products/'+pair+'/book',printout=False)
+    ask = df.iloc[0]['asks'][0]
+    bid = df.iloc[0]['bids'][0]
+    return float(bid), float(ask)
 
 
 def initialize_blotter():
@@ -79,6 +112,23 @@ def initialize_pl(pairs):
         pl = pl.append(data, ignore_index=True)
     pl = pl.set_index('Pairs')
     return pl
+
+def get_products():
+    df = load('https://api.gdax.com/products',printout=False)
+    return df
+
+def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
+    time.sleep(delay)
+    header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
+    r = requests.get(url, headers=header)
+    df = pd.read_json(r.text)
+    if remove_bottom_rows > 0:
+        df.drop(df.tail(remove_bottom_rows).index,inplace=True)
+    df.drop(columns=remove_columns,axis=1)
+    df = df.dropna(axis=1)
+    if printout:
+        print(df)
+    return df
 
 if __name__ == "__main__":
     main()
