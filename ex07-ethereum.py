@@ -16,11 +16,8 @@
 #
 # Docs: https://etherscan.io/chart/etherprice
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io
 import pandas as pd
-import json
-import io
 
 def main():
 
