@@ -34,9 +34,13 @@ def main():
     print(blotter)
 
 
-def trade(blotter,qty,pair):
+def trade(blotter,pl,qty,pair):
     bid, ask = get_price(pair)
-    data = pd.DataFrame([[dt.datetime.now(), pair ,qty, ask]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
+    if qty > 0:
+        price = ask
+    else:
+        price = bid
+    data = pd.DataFrame([[dt.datetime.now(), pair ,qty, price]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
     return blotter
 
