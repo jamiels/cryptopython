@@ -16,55 +16,36 @@
 
 # Build full app
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io, time
 import pandas as pd
-import json
-import io
-import time
 import datetime as dt
 
-def main():    
-    # Initial portfolio size in cash
-    funds = 100000000.0
-    pairs = ['ethusd','btcusd'] # assume usd base
 
-    # Initialize data structures
-    df_blotter = initialize_blotter()
-    df_pl = initialize_pl(pairs)
-    df_products = get_products()
+def main(): 
 
-    # Design a menu a system 
-    menu = ('Buy', 'Sell', 'Show Blotter', 'Show PL', 'Quit')
-    while True:
-        choice = display_menu(menu,exit_option=5)
-        if choice == 1:
-            # Buy
-            print("Choice 1 chosen")
-        elif choice == 2:
-            print("Choice 2 chosen")
-            # Sell
-        elif choice == 3:
-            view_blotter(df_blotter)
-        elif choice == 4:
-            view_pl(df_pl)
-        # Complete rest
+    funds = 100000000.0   
+    pairs = ['eth-usd','btc-usd']
 
-def display_menu(menu,exit_option=-1):
-    for m in menu:
-        print(menu.index(m)+1,". ",m)
-    choice = int(input("Enter choice >> #"))
-    if choice==exit_option:
-        print("Bye")
-        quit()
-    return choice
+    blotter = initialize_blotter()
+    pl = initialize_pl(pairs)
+    
+    blotter, pl = trade(blotter,1,pairs[0])
+    blotter, pl = trade(blotter,2,pairs[0])
+    blotter, pl = trade(blotter,-1,pairs[0])
 
-def calc_vwap(current_qty,current_vwap,qty,price):
-    dollar = current_qty * current_vwap
-    new_dollar = dollar + (qty * price)
-    new_qty = current_qty + qty
-    new_vwap = new_dollar / new_qty
-    return new_vwap
+    print(blotter)
+    print(pl)
+
+
+def trade(blotter,pl,qty,pair):
+    bid, ask = get_price(pair)
+    if qty > 0:
+        price = ask
+    else:
+        price = bid
+    data = pd.DataFrame([[dt.datetime.now(), pair ,qty, price]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
+    blotter = blotter.append(data, ignore_index=True)
+    return blotter
 
 def update_pl(pl,pair,qty,price):
     if qty > 0: # buy
@@ -79,19 +60,24 @@ def update_pl(pl,pair,qty,price):
         print("Insert code handling a sale - recalc UPL,RPL & position")
     return pl
 
-def view_blotter(df_blotter):
-    print("---- Trade Blotter")
-    print(df_blotter)
-    print()
 
+def calc_vwap(current_qty,current_vwap,qty,price):
+    current_dollar = current_qty * current_vwap
+    new_dollar = current_dollar + (qty * price)
+    new_qty = current_qty + qty
+    new_vwap = new_dollar / new_qty
+    return new_vwap
 
-def view_pl(df_pl):
-    # TODO Update UPL here
-    print("---- PL")
-    print(df_pl)
-    print()
+# Inititalize PL
+def initialize_pl(pairs):
+    col_names = ['Pairs','Position','VWAP','UPL','RPL']
+    pl = pd.DataFrame(columns=col_names)
+    for p in pairs:
+        data = pd.DataFrame([[p,0,0,0,0]] ,columns=col_names)
+        pl = pl.append(data, ignore_index=True)
+    return pl
 
-
+# Get current pair price
 def get_price(pair):
     df = load('https://api.gdax.com/products/'+pair+'/book',printout=False)
     ask = df.iloc[0]['asks'][0]
@@ -99,29 +85,21 @@ def get_price(pair):
     return float(bid), float(ask)
 
 
+# Initialize a new blotter  
 def initialize_blotter():
     col_names = ['Timestamp','Pair','Quantity','Executed Price']
     return pd.DataFrame(columns=col_names)
 
 
-def initialize_pl(pairs):
-    col_names = ['Pairs','Position','VWAP','UPL','RPL']
-    pl = pd.DataFrame(columns=col_names)
-    for p in pairs:
-        data = pd.DataFrame([[p,0,0,0,0]] ,columns=col_names)
-        pl = pl.append(data, ignore_index=True)
-    pl = pl.set_index('Pairs')
-    return pl
 
-def get_products():
-    df = load('https://api.gdax.com/products',printout=False)
-    return df
 
+# Load function
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     time.sleep(delay)
     header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     r = requests.get(url, headers=header)
     df = pd.read_json(r.text)
+
     if remove_bottom_rows > 0:
         df.drop(df.tail(remove_bottom_rows).index,inplace=True)
     df.drop(columns=remove_columns,axis=1)
@@ -129,6 +107,7 @@ def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     if printout:
         print(df)
     return df
+
 
 if __name__ == "__main__":
     main()
