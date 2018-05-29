@@ -24,7 +24,7 @@ def main():
     # Show best bid / ask for Eth
     df = load('https://api.gdax.com/products/eth-usd/book',printout=True)
 
-    Show depth of 50
+    #Show depth of 50
     df = load('https://api.gdax.com/products/eth-usd/book?level=2',printout=True)
 
 
