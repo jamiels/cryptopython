@@ -16,29 +16,37 @@
 #
 # Docs: https://coinmarketcap.com/api/
 
-import requests
-import matplotlib.pyplot as plt
+import requests, json, time
 import pandas as pd
-import json
-import time
+import urllib3
 
 def main():
 
-    print("Get universe of tickers")
-    df = pd.read_json("https://api.coinmarketcap.com/v1/ticker/")
-    print(df.info())
+    # Show raw JSON ticker data
+    url = 'https://api.coinmarketcap.com/v1/ticker/'
+    http = urllib3.PoolManager()
+    tickers_json = http.request('GET', url)
+    #print(tickers_json.data)
+
+    # Convert to DataFrame and show head
+    print('Get universe of tickers')
+    df = pd.read_json('https://api.coinmarketcap.com/v1/ticker/')
     print(df.head())
+    print(df.info())
+
+    # Sort and iterate through
     df = df.sort_values(by=['symbol'])
     for i, r in df.iterrows():
-        print(r["symbol"]," ",r["price_usd"])
+        print(i,r['symbol'],r['price_usd'])
     
+    # Select specific cryptos
+    selections = ['ETH','BTC']
+    df = df[df['symbol'].isin(selections)]
+    print(df[['id','price_usd']])
 
-
+    # Pseudo-streaming of LTC price, CTRL-C to exit
     print("Stream litecoin price")
     for n in range(0,2):
-        df = pd.read_json("https://api.coinmarketcap.com/v1/ticker/litecoin")
-        print(df["price_usd"])
+        df = pd.read_json('https://api.coinmarketcap.com/v1/ticker/litecoin')
+        print(df['price_usd'])
         time.sleep(15)
-
-if __name__ == "__main__":
-    main()
