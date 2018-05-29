@@ -18,21 +18,23 @@
 #
 # Docs: https://docs.gdax.com/#products
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io, time
 import pandas as pd
-import json
-import io
-import time
-
 
 
 def main():    
     # Show products (currency pairs)
     df = load('https://api.gdax.com/products',printout=False)
+    print(df)
     for i, r in df.iterrows():
         print(r["id"])
 
+
+
+
+
+
+# Load function
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     time.sleep(delay)
     header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
@@ -45,7 +47,6 @@ def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     if printout:
         print(df)
     return df
-
 
 
 if __name__ == "__main__":
