@@ -18,13 +18,18 @@
 
 from blockchain import exchangerates as er
 
-symbols = er.get_ticker()
-for k in symbols:
-    print(str(k), symbols[k].p15min)
+# Get a list of currency symbols
+currency_symbols = er.get_ticker()
 
+# Print list of symbols
+for c in currency_symbols:
+    print (c)
 
-# How much BTC can USD buy?
+# Cost of BTC in currency
+for c in currency_symbols:
+    print(c," :", currency_symbols[c].p15min)
 
-for d in range(0,100000, 10000):
-    print("$",d," = ",er.to_btc('USD',d)," BTC")
+# Cost of currency in BTC
+for c in currency_symbols:
+    print("1 BTC :", 1/ currency_symbols[c].p15min, c)
 
