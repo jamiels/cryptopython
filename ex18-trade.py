@@ -16,25 +16,63 @@
 #
 # Docs: https://docs.gdax.com
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io, time
 import pandas as pd
-import json
-import io
-import time
+import datetime as dt
+
 
 def main():    
-    df = initialize_blotter()
-    print(df)
+    pairs = ['eth-usd','btc-usd']
 
-def trade(side,pair):
-    df = load('https://api.gdax.com/products/eth-usd/book',printout=True)
+    blotter = initialize_blotter()
+    pl = initialize_pl(pairs)
+    
+    blotter = trade(blotter,1,pairs[0])
+    blotter = trade(blotter,2,pairs[0])
+    blotter = trade(blotter,-1,pairs[0])
 
+    print(blotter)
+
+
+def trade(blotter,qty,pair):
+    bid, ask = get_price(pair)
+    data = pd.DataFrame([[dt.datetime.now(), pair ,qty, ask]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
+    blotter = blotter.append(data, ignore_index=True)
+    return blotter
+
+
+# Inititalize PL
+def initialize_pl(pairs):
+    col_names = ['Pairs','Position','VWAP','UPL','RPL']
+    pl = pd.DataFrame(columns=col_names)
+    for p in pairs:
+        data = pd.DataFrame([[p,0,0,0,0]] ,columns=col_names)
+        pl = pl.append(data, ignore_index=True)
+    return pl
+
+# Get current pair price
+def get_price(pair):
+    df = load('https://api.gdax.com/products/'+pair+'/book',printout=False)
+    ask = df.iloc[0]['asks'][0]
+    bid = df.iloc[0]['bids'][0]
+    return float(bid), float(ask)
+
+
+# Initialize a new blotter  
+def initialize_blotter():
+    col_names = ['Timestamp','Pair','Quantity','Executed Price']
+    return pd.DataFrame(columns=col_names)
+
+
+
+
+# Load function
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     time.sleep(delay)
     header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     r = requests.get(url, headers=header)
     df = pd.read_json(r.text)
+
     if remove_bottom_rows > 0:
         df.drop(df.tail(remove_bottom_rows).index,inplace=True)
     df.drop(columns=remove_columns,axis=1)
@@ -43,10 +81,6 @@ def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
         print(df)
     return df
 
-
-def initialize_blotter():
-    col_names = ['Timestamp','Delta','Symbol','Volume','Executed Price']
-    return pd.DataFrame(columns=col_names)
 
 if __name__ == "__main__":
     main()
