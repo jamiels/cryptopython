@@ -29,9 +29,9 @@ def main():
     blotter = initialize_blotter()
     pl = initialize_pl(pairs)
     
-    blotter, pl = trade(blotter,1,pairs[0])
-    blotter, pl = trade(blotter,2,pairs[0])
-    blotter, pl = trade(blotter,-1,pairs[0])
+    blotter, pl = trade(blotter, pl, 1,pairs[0])
+    blotter, pl = trade(blotter, pl, 2,pairs[0])
+    blotter, pl = trade(blotter, pl, -1,pairs[0])
 
     print(blotter)
     print(pl)
@@ -89,6 +89,28 @@ def get_price(pair):
 def initialize_blotter():
     col_names = ['Timestamp','Pair','Quantity','Executed Price']
     return pd.DataFrame(columns=col_names)
+
+
+
+
+# Load function
+def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
+    time.sleep(delay)
+    header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
+    r = requests.get(url, headers=header)
+    df = pd.read_json(r.text)
+
+    if remove_bottom_rows > 0:
+        df.drop(df.tail(remove_bottom_rows).index,inplace=True)
+    df.drop(columns=remove_columns,axis=1)
+    df = df.dropna(axis=1)
+    if printout:
+        print(df)
+    return df
+
+
+if __name__ == "__main__":
+    main()
 
 
 
