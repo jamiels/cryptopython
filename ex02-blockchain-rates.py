@@ -32,4 +32,8 @@ for c in currency_symbols:
 # Cost of currency in BTC
 for c in currency_symbols:
     print("1 BTC :", 1/ currency_symbols[c].p15min, c)
+    
+# Direct look up
+cad_base_btc = er.to_btc('CAD',5000)
+print('1 CAD costs',cad_base_btc,'BTCs')
 
