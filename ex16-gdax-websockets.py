@@ -31,7 +31,7 @@ async def start_gdax_websocket():
             print(m)
 
 def build_request():
-    return "{ \"type\": \"subscribe\",    \"channels\": [{ \"name\": \"heartbeat\", \"product_ids\": [\"ETH-USD\"] }]}"
+    return "{ \"type\": \"subscribe\",    \"channels\": [{ \"name\": \"ticker\", \"product_ids\": [\"ETH-USD\"] }]}"
 
 if __name__ == "__main__":
     main()
