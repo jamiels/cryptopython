@@ -16,33 +16,46 @@
 #
 # Docs: https://docs.gdax.com
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io, time
 import pandas as pd
-import json
-import io
-import time
+import datetime as dt
+
 
 def main():    
-    blotter = initialize_blotter()
-    pairs = ['ethusd','btcusd'] # assume usd base
-    pl = initialize_pl(pairs)
+    pairs = ['eth-usd','btc-usd']
+
+    blotter, blotter_col_names = initialize_blotter()
+    pl, pl_col_names = initialize_pl(pairs)
     print(pl)
+    
+    bid, ask = get_price(pairs[0])
+    print("bid ", bid, " ask", ask)
+    data = pd.DataFrame([[dt.datetime.now(), pairs[0] ,1.223, ask]] ,columns=blotter_col_names)
+    blotter = blotter.append(data, ignore_index=True)
+    print(blotter)
 
-def trade(side,pair):
-    df = load('https://api.gdax.com/products/eth-usd/book',printout=True)
 
+# Inititalize PL
 def initialize_pl(pairs):
     col_names = ['Pairs','Position','VWAP','UPL','RPL']
     pl = pd.DataFrame(columns=col_names)
     for p in pairs:
         data = pd.DataFrame([[p,0,0,0,0]] ,columns=col_names)
         pl = pl.append(data, ignore_index=True)
-    return pl
+    return pl, col_names
 
+# Get current pair price
+def get_price(pair):
+    df = load('https://api.gdax.com/products/'+pair+'/book',printout=False)
+    ask = df.iloc[0]['asks'][0]
+    bid = df.iloc[0]['bids'][0]
+    return float(bid), float(ask)
+
+
+# Initialize a new blotter  
 def initialize_blotter():
     col_names = ['Timestamp','Pair','Quantity','Executed Price']
-    return pd.DataFrame(columns=col_names)
+    return pd.DataFrame(columns=col_names), col_names
 
 
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
