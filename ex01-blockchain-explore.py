@@ -45,9 +45,12 @@ def main():
     # Laszlo's pizza tx inputs
     for o in pizza_tx.inputs:
         print(o.value)
+        
+    # Cost of pizza
+    pizza_cost = format(pizza_tx.outputs.pop().value,",d")
     
     # Expensive pizza!
-    print("That pizza cost ", satoshis_to_btc(pizza_tx.outputs.pop().value), " BTCs!")
+    print("That pizza cost ", satoshis_to_btc(pizza_cost), " BTCs!")
 
     # get Txs in Laszlo's address
     laszlo_addr = "1XPTgDRhN8RFnzniWCddobD9iKZatrvH4"
