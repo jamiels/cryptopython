@@ -16,28 +16,28 @@
 #
 # Docs: https://docs.gdax.com
 
-import requests
-import matplotlib.pyplot as plt
+import requests, io, time
 import pandas as pd
-import json
-import io
-import time
-
 
 
 def main():    
     # Show best bid / ask for Eth
     df = load('https://api.gdax.com/products/eth-usd/book',printout=True)
 
-
-    # Show depth of 50
+    Show depth of 50
     df = load('https://api.gdax.com/products/eth-usd/book?level=2',printout=True)
 
+
+
+
+
+# Load function
 def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     time.sleep(delay)
     header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     r = requests.get(url, headers=header)
     df = pd.read_json(r.text)
+
     if remove_bottom_rows > 0:
         df.drop(df.tail(remove_bottom_rows).index,inplace=True)
     df.drop(columns=remove_columns,axis=1)
@@ -45,7 +45,6 @@ def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
     if printout:
         print(df)
     return df
-
 
 
 if __name__ == "__main__":
