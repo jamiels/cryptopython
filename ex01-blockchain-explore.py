@@ -37,6 +37,16 @@ def main():
     
     # get the tx
     pizza_tx = be.get_tx(pizza_tx_hash)
+    
+    # Laszlo's pizza tx outputs
+    for o in pizza_tx.outputs:
+        print(o.value)
+
+    # Laszlo's pizza tx inputs
+    for o in pizza_tx.inputs:
+        print(o.value)
+    
+    # Expensive pizza!
     print("That pizza cost ", satoshis_to_btc(pizza_tx.outputs.pop().value), " BTCs!")
 
     # get Txs in Laszlo's address
