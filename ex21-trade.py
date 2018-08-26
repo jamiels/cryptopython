@@ -16,70 +16,74 @@
 #
 # Docs: https://docs.gdax.com
 
-import requests, io, time
+import requests
+import io
+import time
 import pandas as pd
 import datetime as dt
 
 
-def main():    
-    pairs = ['eth-usd','btc-usd']
+def main():
+    pairs = ['eth-usd', 'btc-usd']
 
     blotter = initialize_blotter()
     pl = initialize_pl(pairs)
-    
-    blotter = trade(blotter,1,pairs[0])
-    blotter = trade(blotter,2,pairs[0])
-    blotter = trade(blotter,-1,pairs[0])
+
+    blotter = trade(blotter, pl, 1, pairs[0])
+    blotter = trade(blotter, pl, 2, pairs[0])
+    blotter = trade(blotter, pl, -1, pairs[0])
 
     print(blotter)
 
 
-def trade(blotter,pl,qty,pair):
+def trade(blotter, pl, qty, pair):
     bid, ask = get_price(pair)
     if qty > 0:
         price = ask
     else:
         price = bid
-    data = pd.DataFrame([[dt.datetime.now(), pair ,qty, price]] ,columns=['Timestamp','Pair','Quantity','Executed Price'])
+    data = pd.DataFrame([[dt.datetime.now(), pair, qty, price]], columns=[
+                        'Timestamp', 'Pair', 'Quantity', 'Executed Price'])
     blotter = blotter.append(data, ignore_index=True)
     return blotter
 
 
 # Inititalize PL
 def initialize_pl(pairs):
-    col_names = ['Pairs','Position','VWAP','UPL','RPL']
+    col_names = ['Pairs', 'Position', 'VWAP', 'UPL', 'RPL']
     pl = pd.DataFrame(columns=col_names)
     for p in pairs:
-        data = pd.DataFrame([[p,0,0,0,0]] ,columns=col_names)
+        data = pd.DataFrame([[p, 0, 0, 0, 0]], columns=col_names)
         pl = pl.append(data, ignore_index=True)
     return pl
 
 # Get current pair price
+
+
 def get_price(pair):
-    df = load('https://api.gdax.com/products/'+pair+'/book',printout=False)
+    df = load('https://api.gdax.com/products/'+pair+'/book', printout=False)
     ask = df.iloc[0]['asks'][0]
     bid = df.iloc[0]['bids'][0]
     return float(bid), float(ask)
 
 
-# Initialize a new blotter  
+# Initialize a new blotter
 def initialize_blotter():
-    col_names = ['Timestamp','Pair','Quantity','Executed Price']
+    col_names = ['Timestamp', 'Pair', 'Quantity', 'Executed Price']
     return pd.DataFrame(columns=col_names)
 
 
-
-
 # Load function
-def load(url,printout=False,delay=0,remove_bottom_rows=0,remove_columns=[]):
+def load(url, printout=False, delay=0, remove_bottom_rows=0, remove_columns=[]):
     time.sleep(delay)
-    header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     r = requests.get(url, headers=header)
     df = pd.read_json(r.text)
 
     if remove_bottom_rows > 0:
-        df.drop(df.tail(remove_bottom_rows).index,inplace=True)
-    df.drop(columns=remove_columns,axis=1)
+        df.drop(df.tail(remove_bottom_rows).index, inplace=True)
+    df.drop(columns=remove_columns, axis=1)
     df = df.dropna(axis=1)
     if printout:
         print(df)

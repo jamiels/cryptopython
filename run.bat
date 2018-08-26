@@ -7,7 +7,7 @@ python ex06-coinmarketcap.py
 python ex07-ethereum.py
 python ex08-ethereum-matplotlib.py
 python ex09-gdax.py
-python ex10-gdax-refactored.py
+python ex10-load-function.py
 python ex11-gdax-products.py
 python ex12-gdax-orderbook.py
 python ex13-gad-trades.py

@@ -17,13 +17,14 @@
 # Docs - https://github.com/blockchain/api-v1-client-python/blob/master/docs/blockexplorer.md
 
 from blockchain import blockexplorer as be
+
+
 def main():
 
     # get latest block (max height)
     latest_block = be.get_latest_block()
-    print("Latest height: ",str(latest_block.height))
-    print("Latest hash: ",latest_block.hash)
-
+    print("Latest height: ", str(latest_block.height))
+    print("Latest hash: ", latest_block.hash)
 
     # hash of the block where laszlo transaction resides
     pizza_block_hash = "00000000152340ca42227603908689183edc47355204e7aca59383b0aaac1fd8"
@@ -34,10 +35,10 @@ def main():
     # get the block
     pizza_block = be.get_block(pizza_block_hash)
     print("The block height for the Laszlo tx ", pizza_block.height)
-    
+
     # get the tx
     pizza_tx = be.get_tx(pizza_tx_hash)
-    
+
     # Laszlo's pizza tx outputs
     for o in pizza_tx.outputs:
         print(o.value)
@@ -45,10 +46,10 @@ def main():
     # Laszlo's pizza tx inputs
     for o in pizza_tx.inputs:
         print(o.value)
-        
+
     # Cost of pizza
-    pizza_cost = format(pizza_tx.outputs.pop().value,",d")
-    
+    pizza_cost = pizza_tx.outputs.pop().value
+
     # Expensive pizza!
     print("That pizza cost ", satoshis_to_btc(pizza_cost), " BTCs!")
 
@@ -59,9 +60,11 @@ def main():
     for t in laszlo_txs:
         for o in t.outputs:
             print(satoshis_to_btc(o.value))
-    
+
+
 def satoshis_to_btc(satoshi):
-    return satoshi / 100000000 # one one hundred millionth
+    return satoshi / 100000000  # one one hundred millionth
+
 
 if __name__ == "__main__":
     main()
