@@ -31,7 +31,7 @@ class CoinTrader:
     def get_blotter(self):
         return self.__blotter.copy()
     def get_pl(self):
-        return self.__pl.copy()
+        return self.__pl.copy() 
 
     def trade(self,qty, asset):
         bid, ask = self.__get_price(asset)
