@@ -16,6 +16,9 @@
 #
 # Docs - https://github.com/blockchain/api-v1-client-python/blob/master/docs/blockexplorer.md
 
+
+# pip install blockchain
+
 from blockchain import blockexplorer as be
 
 

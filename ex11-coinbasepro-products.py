@@ -18,6 +18,8 @@
 #
 # Docs: https://docs.gdax.com/#products
 
+# pip install requests
+
 import requests, io, time
 import pandas as pd
 
