@@ -63,7 +63,6 @@ class CoinTrader:
             abs_qty = abs(qty)
             net = (abs_qty * price) - (abs_qty * current_vwap)
             self.__pl.at[symbol,'RPL'] = rpl + net
-        return pl, new_vwap
 
 
     def __calc_vwap(self,current_qty, current_vwap, qty, price):
