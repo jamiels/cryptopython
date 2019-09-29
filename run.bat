@@ -8,12 +8,18 @@ python ex07-ethereum.py
 python ex08-ethereum-matplotlib.py
 python ex09-gdax.py
 python ex10-load-function.py
-python ex11-gdax-products.py
-python ex12-gdax-orderbook.py
-python ex13-gad-trades.py
-python ex14-blotter.py
-python ex15-blotter-pricing.py
-python ex16-gdax-websockets.py
-python ex17-pnl.py
-python ex18-trade.py
-python ex19-vwap.py
+python ex11-coinbasepro-products.py
+python ex12-coinbasepro-orderbook-level1.py
+python ex13-coinbasepro-orderbook-level2.py
+python ex14-coinbasepro-orderbook-level2-plotly.py
+python ex15-coinbasepro-trades.py
+python ex17-blotter.py
+python ex18-blotter-pricing.py
+python ex19-coinbasepro-websockets.py
+python ex20-pnl.py
+python ex21-trade.py
+python ex22-vwap.py
+python ex23-assignment.py
+python ex24-scipmin.py
+python ex25-0x-relays.py
+
